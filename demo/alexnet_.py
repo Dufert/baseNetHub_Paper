@@ -6,7 +6,7 @@ class AlexNet_(nn.Module):
     def __init__(self, num_classes: int = 10) -> None:
         super().__init__()
 
-        self.layers = nn.Sequential(
+        self.features = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
@@ -31,13 +31,24 @@ class AlexNet_(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(4096, num_classes)
         )
+        self._initialize_weights()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.layers(x)
+        x = self.features(x)
         x = self.avgpool(x)
         x = torch.flatten(x, 1)  # 将每个data的feature map 压扁
         x = self.classifier(x)
         return x
+
+    def _initialize_weights(self) -> None:
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out')
+                if m.bias is not None:
+                    m.bias.data.zero_()
+            if isinstance(m, nn.Linear):
+                nn.init.normal(m.weight, 0, 0.01)
+                nn.init.zeros_(m.bias)
 
 
 if __name__ == "__main__":

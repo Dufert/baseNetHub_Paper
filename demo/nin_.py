@@ -7,7 +7,7 @@ class NiN_(nn.Module):
         super().__init__()
 
         self.num_classes = num_classes
-        self.layers = nn.Sequential(
+        self.features = nn.Sequential(
             nn.Conv2d(3, 192, kernel_size=5, padding=2),
             nn.ReLU(inplace=True),
             nn.Conv2d(192, 160, kernel_size=1),
@@ -37,14 +37,14 @@ class NiN_(nn.Module):
         self._initialize_weights()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.layers(x)
+        x = self.features(x)
         x = x.view(x.size(0), self.num_classes, -1)  # 将输出对应成类，不使用fc
         return x
 
     def _initialize_weights(self) -> None:
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                m.weight.data.normal_(0, 0.05)
+                nn.init.kaiming_normal_(m.weight, mode='fan_out')
                 if m.bias is not None:
                     m.bias.data.zero_()
 
