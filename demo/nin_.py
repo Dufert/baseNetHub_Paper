@@ -14,7 +14,7 @@ class NiN_(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(160, 96, kernel_size=1),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
+            nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),  # ceil_mode 天花板模式，在不足kernel_size时，仍然输出一个结果
             nn.Dropout(inplace=True),
 
             nn.Conv2d(96, 192, kernel_size=5, padding=2),
